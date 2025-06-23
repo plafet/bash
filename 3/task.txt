@@ -1,0 +1,32 @@
+Задание: Написать скрипт создания аппендера для логгера джава сервиса, входные параметры:  log_name категория логирования и log_level
+
+структура логгера logback.xml:
+
+    <appender name="ACCOUNT_MANAGER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPrefix}/accountmanager.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPrefix}/old/accountmanager.%d{"yyyy-MM-dd-HH" GMT}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+ 
+    <appender name="ACCOUNT_MANAGER_ROLL" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="ACCOUNT_MANAGER_FILE"/>
+    </appender>
+
+    <logger name="com.panbet.web.managers.account.AccountManager" level="info">
+        <appender-ref ref="ACCOUNT_MANAGER_ROLL"/>
+    </logger>
+
+
+Что тут что? из этого куска можно понять что у нас есть логгер (читаем с конца), который 
+  1) пишет логи категории com.panbet.web.managers.account.AccountManager уровня info
+  2) пишет их ассинхронно потому что ссылается в ACCOUNT_MANAGER_ROLL
+  3) лог называется accountmanager.log, прописаны определенные правила ротации
+  4) Сам аппендер называется ACCOUNT_MANAGER_FILE а его ассинхроннай апендер ACCOUNT_MANAGER_ROLL
+
+Надо написать скрипт который будет запрашивать имя лога, категорию логирования, и уровень логирования
+Имя аппендера называть исходя из названия лога, например имя лога - provider.log, тогда имена аппендеров будут PROVIDER_FILE и PROVIDER_ROLL соответственно
+Результатом работы скрипта будет вот такой аппендер, который он выводит на экран, или сохраняет в файл logback.xml
