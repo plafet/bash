@@ -1,50 +1,45 @@
 #! /bin/bash
 
 #Проверим есть ли папка OLD, если папки нет создадим ее
-### NTF а если у меня другая структура каталогов, мне что придется ее создавать там где у тебя? )))) Не надо завязываться на глобальных путях, используй относительные пути через . и ..
-### Глобальные переменные, лучше называть с большой буквы. Маленькими буквами обычно обзывают что-то временное или короткоживущее, что нужно для получения промежуточных результатов и т.п.
-### и напоминаю что их названия должны отражать сущность. Из названия dir не понятно что это за директория, то ли это рабочая, толи временная, а на деле оказывается вообще там старые логи хранятся
 DIR_DEST=old
 LOGS=logs_script.txt
 DIR_SOURCE=.
 
-if [[ -d $DIR_DEST ]]; then
-    echo "dir "$DIR_DEST" already exist" >> $LOGS  
-### NTF Вообще не хочу быть занудой, но если я в логе вижу сообщение о том что директория готова не очень понятно что это значит ))) Она либо существует (exists) либо нет ))))
-### При выводе значений переменных лучше обрамлять их в кавычки. В случае сбоя, где например переменная неопределена по сообщению будет не понятно визуально, кроме того если в пути будут пробелы - то тоже
-### может быть непонятно.
+logger() {
+    exit 1
+echo "$@" >> "$LOGS"
+}
+
+if ls "$DIR_SOURCE"/*.log 1> /dev/null 2>&1; then
+    logger "logs ready"
 else
-    echo "dir "$DIR_DEST" NOT ready" >> $LOGS
-        if [[ -w `pwd` ]]; then
-            echo "Have permission to create "$DIR_DEST"" >> $LOGS
-    mkdir $DIR_DEST 
-    echo "created dir $DIR_DEST" >> $LOGS
-        fi
-fi
-### NTF нет проверки что директория создалась, ведь у нас тупо может не быть прав на это
-
-#проверим есть ли права на добавление файлов в папку
-if [[ -w $DIR_DEST ]]; then
-    echo "dir "$DIR_DEST" is writable" >> $LOGS
-    #основная часть работы с файлами
-### NTF основную часть работы лучше не заворачивать в if, это позволит избежать лишних табуляций. Лучше сделать наоборот, например:
-### if что-то_не_по_нашему -> пишем ошибку, выход из скрипта
-### основной_функционал
-
-    for logfile in "$DIR_SOURCE"/*.log; do
-### NTF - нет табуляции в цикле
-        timestamp=$(date +'%Y-%m-%d_%H-%M')
-        filename=$(basename "$logfile")
-        new_name="${timestamp}_${filename}.gz"
-            if gzip -c "$logfile" > "$DIR_DEST/$new_name"; then
-                rm "$logfile"
-                echo "log processed successfully: $filename -> $new_name" >> $LOGS
-            else
-                echo "Error processing log $filename" >> $LOGS
-### NTF Лучше придерживеться единого языка, если уж ты начал писать лог на английском - продолжай в том же духе, иначе выглядит странно )))
-            fi
-    done    
-else 
-    echo "no write permissions in $DIR_DEST" >> $LOGS
+    logger "no logs"
     exit 1
 fi
+
+if [[ -d $DIR_DEST ]]; then
+    logger "dir "$DIR_DEST" already exist"  
+else
+    logger "dir "$DIR_DEST" NOT ready"
+        if [[ -w `pwd` ]]; then
+            logger "Have permission to create "$DIR_DEST""
+    mkdir $DIR_DEST 
+    logger "created dir $DIR_DEST"
+        fi
+fi
+
+if ! [[ -w $DIR_DEST ]]; then
+    logger "no write permissions in $DIR_DEST"
+    exit 1
+fi
+for logfile in "$DIR_SOURCE"/*.log; do
+    timestamp=$(date +'%Y-%m-%d_%H-%M')
+    filename=$(basename "$logfile")
+    new_name="${timestamp}_${filename}.gz"
+        if gzip -c "$logfile" > "$DIR_DEST/$new_name"; then
+            rm "$logfile"
+            logger "log processed successfully: $filename -> $new_name"
+        else
+            logger "Error processing log $filename"
+        fi
+done
