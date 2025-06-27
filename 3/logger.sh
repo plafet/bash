@@ -10,7 +10,8 @@ P2='" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPrefix}/'
 P3='</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPrefix}/old/accountmanager.%d{"yyyy-MM-dd-HH" GMT}.log</fileNamePattern>
+            <fileNamePattern>${logPrefix}/old/'
+P99='.%d{"yyyy-MM-dd-HH" GMT}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>${DEFAULT_PATTERN}</pattern>
@@ -43,7 +44,7 @@ fi
 
 #echo $NEW_LOG_NAME $NEW_LOG_CATEGORY $NEW_LOG_LEVEL $APPENDER
 
-echo "${P1}${APPENDER}_FILE${P2}${NEW_LOG_NAME}${P3}${P4}${APPENDER}_ROLL${P5}${P6}${APPENDER}_FILE${P7}${P8}${NEW_LOG_CATEGORY}${P9}${NEW_LOG_LEVEL}${P10}${APPENDER}_ROLL${P11}"
+echo "${P1}${APPENDER}_FILE${P2}${1}${P3}${1%.*}${P99}${P4}${APPENDER}_ROLL${P5}${P6}${APPENDER}_FILE${P7}${P8}${NEW_LOG_CATEGORY}${P9}${NEW_LOG_LEVEL}${P10}${APPENDER}_ROLL${P11}"
 
 #function character_conversions { 
 #OLD_LOG_NAME=`grep "_FILE" text.txt | awk -F '"' 'NR==1{print $2}'`
