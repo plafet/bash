@@ -15,7 +15,26 @@ P3='</file>
         <encoder>
             <pattern>${DEFAULT_PATTERN}</pattern>
         </encoder>
-    </appender>'
+    </appender>
+'
+P4='
+    <appender name="'
+P5='" class="ch.qos.logback.classic.AsyncAppender">'
+P6='
+        <appender-ref ref="'
+P7='"/>
+    </appender>
+'
+P8='
+    <logger name="'
+P9='" level="'
+P10='">
+        <appender-ref ref="'
+P11='"/>
+    </logger>'
+
+
+
 
 if [[ "$#" -lt 3 ]]; then
     echo "You must specify three arguments in the following sequence: 1 - log name 2 - log category 3 - log level"
@@ -24,7 +43,7 @@ fi
 
 #echo $NEW_LOG_NAME $NEW_LOG_CATEGORY $NEW_LOG_LEVEL $APPENDER
 
-echo "${P1}${APPENDER}_FILE${P2}${NEW_LOG_NAME}${P3}"
+echo "${P1}${APPENDER}_FILE${P2}${NEW_LOG_NAME}${P3}${P4}${APPENDER}_ROLL${P5}${P6}${APPENDER}_FILE${P7}${P8}${NEW_LOG_CATEGORY}${P9}${NEW_LOG_LEVEL}${P10}${APPENDER}_ROLL${P11}"
 
 #function character_conversions { 
 #OLD_LOG_NAME=`grep "_FILE" text.txt | awk -F '"' 'NR==1{print $2}'`
